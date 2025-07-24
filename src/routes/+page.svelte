@@ -39,6 +39,7 @@
           ctx.drawImage(img, 0, 0, canvas.width, newHeight);
 
           const data = canvas.toDataURL('image/jpeg');
+          // https://universe.roboflow.com/penulisanilmiah-11njc/organic-and-anorganic-waste
           fetch('https://detect.roboflow.com/organic-and-anorganic-waste/3?' + new URLSearchParams({
             api_key: 'SJWUY5OVPN5x9oYgOQpv'
           }), {
