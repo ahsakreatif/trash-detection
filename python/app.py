@@ -6,7 +6,7 @@ import cv2
 model = YOLO("trash_mbari_09072023_640imgsz_50epochs_yolov8.pt")
 
 # Open webcam (or replace 0 with 'video.mp4' or a stream URL)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('video.mp4')
 
 app = Flask(__name__)
 
@@ -55,15 +55,14 @@ html = """
             font-weight: 700;
         }
         
-        .header p {
+        .header h3 {
             color: #7f8c8d;
-            font-size: 1.1rem;
+            font-size: 1.8rem;
             line-height: 1.6;
         }
         
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 350px;
             gap: 30px;
             align-items: start;
         }
@@ -74,6 +73,7 @@ html = """
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
+            margin: 0 auto;
         }
         
         .video-feed {
@@ -182,52 +182,13 @@ html = """
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 AI Trash Detection System</h1>
-            <p>Real-time marine debris detection using YOLOv8 deep learning model</p>
+            <h1>Aplikasi Optimalisasi Deteksi Sampah</h1>
+            <h3>Sungai Cisadane dengan Swin Transformer</h3>
         </div>
         
         <div class="main-content">
             <div class="video-container">
                 <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Live trash detection feed">
-            </div>
-            
-            <div class="info-panel">
-                <div class="info-section">
-                    <h3>📊 System Status</h3>
-                    <p><span class="status-indicator"></span>Live Detection Active</p>
-                    <p>Model: YOLOv8 (trash_mbari_09072023)</p>
-                    <p>Resolution: 640px optimized</p>
-                    <p>Training: 50 epochs on marine dataset</p>
-                </div>
-                
-                <div class="info-section">
-                    <h3>🎯 Detection Capabilities</h3>
-                    <ul class="feature-list">
-                        <li>Real-time object detection</li>
-                        <li>Marine debris identification</li>
-                        <li>Multiple object tracking</li>
-                        <li>Confidence scoring</li>
-                        <li>Bounding box visualization</li>
-                        <li>Frame-by-frame analysis</li>
-                    </ul>
-                </div>
-                
-                <div class="info-section">
-                    <h3>🌊 Environmental Impact</h3>
-                    <p>This system helps monitor and identify marine debris in real-time, supporting ocean cleanup efforts and environmental conservation initiatives.</p>
-                    <p>The AI model has been trained on diverse marine waste datasets to accurately detect various types of floating debris.</p>
-                </div>
-                
-                <div class="tech-stack">
-                    <h4>🛠️ Technology Stack</h4>
-                    <ul>
-                        <li>• YOLOv8 (Ultralytics)</li>
-                        <li>• Flask Web Framework</li>
-                        <li>• OpenCV Computer Vision</li>
-                        <li>• Real-time Video Processing</li>
-                        <li>• HTML5/CSS3 Interface</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
@@ -239,7 +200,9 @@ def gen_frames():
     while True:
         success, frame = cap.read()
         if not success:
-            break
+            # Reset video to beginning when it ends
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            continue
         results = model(frame)[0]
         annotated = results.plot()
 
