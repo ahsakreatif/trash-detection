@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template_string
+from flask import Flask, Response, render_template_string, url_for, request
 from ultralytics import YOLO
 import cv2
 
@@ -9,6 +9,14 @@ model = YOLO("trash_mbari_09072023_640imgsz_50epochs_yolov8.pt")
 cap = cv2.VideoCapture('video.mp4')
 
 app = Flask(__name__)
+
+# Set the application root for reverse proxy
+app.config['APPLICATION_ROOT'] = '/pdp2025'
+
+# Add context processor to make base path available in templates
+@app.context_processor
+def inject_base_path():
+    return dict(base_path='/pdp2025')
 
 # HTML Template
 html = """
@@ -188,7 +196,7 @@ html = """
         
         <div class="main-content">
             <div class="video-container">
-                <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Live trash detection feed">
+                <img src="{{ base_path }}{{ url_for('video_feed') }}" class="video-feed" alt="Live trash detection feed">
             </div>
         </div>
     </div>
@@ -220,5 +228,5 @@ def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    print("🚀 Starting server at http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000)
+    print("🚀 Starting server at http://localhost:5001")
+    app.run(host='0.0.0.0', port=5001)
